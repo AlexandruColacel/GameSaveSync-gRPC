@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+option csharp_namespace = "GameSaveSync.Server";
+package gamesavesync;
+
+//defino el servicio de pillar el guardado tanto para serializarlo a la hora de llegar del cliente como deserializarlo a la hora de mandarlo a otro cliente
+
+service TrabajarGuardado{
+    rpc UploadSave(stream saves) returns (EstadoSubida);
+
+    rpc DownloadSave(PeticionBajarGuardado) returns (stream EstadoBajada);
+}
+
+
+
+message saves{
+    int32 id = 1; //Aqui tendre el id del juego
+    string filename = 2; //aqui tendre el nombre del archivo
+    bytes save = 3; //bytes no mas largos de 2^22; este sera donde pillo mi "save"
+}
+
+message EstadoSubida{
+    bool confirmacion = 1;
+    string message = 2;
+}
+
+
+message EstadoBajada{
+    bytes save = 1; //pasamos un cacho del save como respuesta
+}
+message PeticionBajarGuardado{
+    int32 id = 1; //id del juego que vamos a bajar el guardado
+
+}
