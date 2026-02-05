@@ -1,5 +1,6 @@
 using Grpc.Core;
-using GameSaveSync.Server; // Namespace generado por el proto
+using GameSaveSync.Server;
+using Google.Protobuf; // Namespace generado por el proto
 
 namespace GameSaveSync.Server.Services
 {
@@ -18,9 +19,15 @@ namespace GameSaveSync.Server.Services
         {
             // Aquí irá la lógica de leer el archivo, por ahora solo leemos el stream
             while (await requestStream.MoveNext())
-            {
+            {   
+
                 var currentChunk = requestStream.Current;
+                int id = currentChunk.Id; //pillo el id  del objeto
+                string nombre_juego = currentChunk.Filename;
+                ByteString guardado = currentChunk.Save;
+                var stream = new FileStream(UploadDirectory,options);
                 _logger.LogInformation($"Recibido chunk de: {currentChunk.Filename}");
+
             }
 
             // Respondemos una sola vez al final
