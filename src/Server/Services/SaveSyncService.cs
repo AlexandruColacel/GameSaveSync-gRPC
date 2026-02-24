@@ -1,6 +1,7 @@
 using Grpc.Core;
 using GameSaveSync.Server;
-using Google.Protobuf; // Namespace generado por el proto
+using Google.Protobuf;
+
 
 namespace GameSaveSync.Server.Services
 {
@@ -8,7 +9,8 @@ namespace GameSaveSync.Server.Services
     public class SaveSyncService : TrabajarGuardado.TrabajarGuardadoBase
     {
         private readonly ILogger<SaveSyncService> _logger;
-
+        
+        String UploadDirectory = "C:/Users/Lex/TestServer/Updates";
         public SaveSyncService(ILogger<SaveSyncService> logger)
         {
             _logger = logger;
@@ -17,6 +19,7 @@ namespace GameSaveSync.Server.Services
         // Implementación del método SUBIR (Client Streaming)
         public override async Task<EstadoSubida> UploadSave(IAsyncStreamReader<saves> requestStream, ServerCallContext context)
         {
+            FileStream stream = null ;
             // Aquí irá la lógica de leer el archivo, por ahora solo leemos el stream
             while (await requestStream.MoveNext())
             {   
@@ -25,11 +28,23 @@ namespace GameSaveSync.Server.Services
                 int id = currentChunk.Id; //pillo el id  del objeto
                 string nombre_juego = currentChunk.Filename;
                 ByteString guardado = currentChunk.Save;
-                var stream = new FileStream(UploadDirectory,options);
+                
+                if (stream == null)
+                {
+                    string safeFileName = Path.GetFileName(currentChunk.Filename);
+                    string finalPath = Path.Combine(UploadDirectory, safeFileName);
+                    
+                    // Creamos el archivo
+                    stream = new FileStream(finalPath, FileMode.Create);
+                }
+                guardado.WriteTo(stream);
                 _logger.LogInformation($"Recibido chunk de: {currentChunk.Filename}");
 
             }
-
+            if(stream != null)
+            {
+                await stream.DisposeAsync();
+            }
             // Respondemos una sola vez al final
             return new EstadoSubida
             {

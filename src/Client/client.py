@@ -12,7 +12,7 @@ CHUNK_SIZE = 32 * 1024
 
 #definir el canal
 canal = grpc.insecure_channel('localhost:5000') #para pruebas en local lo voy a dejar como insecure chanael.
-stub = savesync_pb2_grpc.TrabajarGuardadoStub(canal) # es my stub del lado del 
+stub = savesync_pb2_grpc.TrabajarGuardadoStub(canal) # es my stub del lado del cliente
 
 
 def coger_save(ruta_archivo,CHUNK_SIZE):
@@ -33,6 +33,6 @@ def coger_save(ruta_archivo,CHUNK_SIZE):
 iterador = coger_save(ruta_archivo,CHUNK_SIZE)
 
 print(f"--- Subiendo {ruta_archivo.name} ---")
-respuesta = stub.SubirGuardado(iterador)
+respuesta = stub.UploadSave(iterador)
 print(f"Servidor dice: {respuesta.message} (Confirmación: {respuesta.confirmacion})")
     
