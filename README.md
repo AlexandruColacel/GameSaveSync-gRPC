@@ -30,7 +30,7 @@ El proyecto sigue un desarrollo iterativo incremental. A continuación se detall
 
 #### Fase 2: Implementación de Lógica (Core)
 - [x] **Cliente (Upload - Streaming):** Implementación de generadores en Python para fragmentación (chunking) y subida de archivos binarios.
-- [ ] **Servidor (Persistencia):** Recepción de streams y escritura asíncrona en disco local.
+- [X] **Servidor (Persistencia):** Recepción de streams y escritura asíncrona en disco local.
 - [ ] **Cliente (Download):** Lógica para solicitar y reconstruir archivos desde el servidor.
 
 #### Fase 3: Futuras Mejoras y Expansión (Backlog)
