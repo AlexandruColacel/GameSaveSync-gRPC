@@ -29,6 +29,6 @@ message EstadoBajada{
     bytes save = 1; //pasamos un cacho del save como respuesta
 }
 message PeticionBajarGuardado{
-    int32 id = 1; //id del juego que vamos a bajar el guardado
+    string filename = 1; //nombre  del juego que vamos a bajar el guardado
 
 }

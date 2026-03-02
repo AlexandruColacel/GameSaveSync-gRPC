@@ -56,14 +56,34 @@ namespace GameSaveSync.Server.Services
         // Implementación del método BAJAR (Server Streaming)
         public override async Task DownloadSave(PeticionBajarGuardado request, IServerStreamWriter<EstadoBajada> responseStream, ServerCallContext context)
         {
-            // Simulación: Enviamos un dato dummy
-            _logger.LogInformation($"Cliente pide bajar juego ID: {request.Id}");
+            //ver en que ruta esta el archivo
+            string safeFileName = Path.GetFileName(request.Filename);
+            string rutaCompleta = Path.Combine(UploadDirectory, safeFileName);
 
-            // Aquí leeríamos del disco y enviaríamos chunks
-            await responseStream.WriteAsync(new EstadoBajada 
-            { 
-                Save = Google.Protobuf.ByteString.CopyFromUtf8("DUMMY_DATA") 
-            });
+            if (File.Exists(rutaCompleta))
+            {
+                //magia
+                using (var fileStream = new FileStream(rutaCompleta, FileMode.Open, FileAccess.Read))
+                {
+                    byte[] chunk = new byte[32*1024] ; //buffee
+                    int bytesleido;
+                    bytesleido = await fileStream.ReadAsync(chunk);
+                    while(bytesleido > 0)
+                    {
+                        
+                        await responseStream.WriteAsync(new EstadoBajada
+                        {
+                            Save = Google.Protobuf.ByteString.CopyFrom(chunk, 0, bytesleido)
+                        });
+                        bytesleido = await fileStream.ReadAsync(chunk);
+                    }
+                }
+            }
+            else
+            {
+                _logger.LogWarning($"Archivo no encontrado: {rutaCompleta}");
+                throw new RpcException(new Status(StatusCode.NotFound, $"El archivo {safeFileName} no existe en el servidor."));
+            }
         }
     }
 }
