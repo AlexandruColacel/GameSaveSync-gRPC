@@ -30,8 +30,9 @@ El proyecto sigue un desarrollo iterativo incremental. A continuación se detall
 
 #### Fase 2: Implementación de Lógica (Core)
 - [x] **Cliente (Upload - Streaming):** Implementación de generadores en Python para fragmentación (chunking) y subida de archivos binarios.
-- [X] **Servidor (Persistencia):** Recepción de streams y escritura asíncrona en disco local.
-- [X] **Cliente (Download):** Lógica para solicitar y reconstruir archivos desde el servidor.
+- [x] **Servidor (Persistencia):** Recepción de streams y escritura asíncrona en disco local.
+- [x] **Cliente (Download):** Lógica para solicitar y reconstruir archivos desde el servidor.
+- [x] **Manejo de Directorios (Compresión Transparente):** Lógica en el cliente para detectar carpetas, comprimirlas dinámicamente en formato `.zip` de forma invisible para el usuario, y auto-descomprimirlas tras la descarga.
 
 #### Fase 3: Futuras Mejoras y Expansión (Backlog)
 - [ ] **Frontal de Usuario (GUI):** Interfaz gráfica "Drag & Drop" para facilitar la gestión de archivos sin terminal.
@@ -64,8 +65,9 @@ The project follows an iterative incremental development lifecycle. Current prog
 
 #### Phase 2: Core Logic Implementation
 - [x] **Client (Upload - Streaming):** Python generator implementation for file chunking and binary streaming.
-- [ ] **Server (Persistence):** Stream reception and asynchronous disk writing logic.
-- [ ] **Client (Download):** Logic to request and reconstruct files from the server.
+- [x] **Server (Persistence):** Stream reception and asynchronous disk writing logic.
+- [x] **Client (Download):** Logic to request and reconstruct files from the server.
+- [x] **Directory Handling (Transparent Compression):** Client-side logic to detect folders, dynamically compress them into `.zip` archives transparently to the user, and auto-extract them upon download.
 
 #### Phase 3: Future Scope & Backlog
 - [ ] **User Frontend (GUI):** "Drag & Drop" graphical interface for seamless file management.
