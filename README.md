@@ -1,4 +1,4 @@
-# GameSaveSync-gRPC 🎮🔄
+# GameSaveSync-gRPC 
 
 > **[Español]** Sistema distribuido para la sincronización de archivos de guardado (SaveGames) mediante gRPC.
 >
@@ -12,14 +12,14 @@
 
 A diferencia de las arquitecturas REST tradicionales, este proyecto implementa **gRPC** sobre **HTTP/2**, aprovechando la serialización binaria (Protocol Buffers) para maximizar el rendimiento y minimizar el uso de ancho de banda. El sistema está diseñado para manejar archivos binarios grandes de manera eficiente mediante el uso de **Streaming**, evitando la sobrecarga de memoria en el servidor.
 
-### 🏗️ Arquitectura y Stack Tecnológico
+###  Arquitectura y Stack Tecnológico
 
 * **Core:** .NET 9 (C#) para un Backend de alto rendimiento.
 * **Cliente:** Python (Scripting eficiente y multiplataforma).
 * **Protocolo:** gRPC (Google Remote Procedure Calls) & Protocol Buffers.
 * **Patrón:** Monorepo (Single Source of Truth para contratos `.proto`).
 
-### 🚀 Estado del Desarrollo (Roadmap)
+###  Estado del Desarrollo (Roadmap)
 
 El proyecto sigue un desarrollo iterativo incremental. A continuación se detalla el progreso actual:
 
@@ -47,14 +47,14 @@ El proyecto sigue un desarrollo iterativo incremental. A continuación se detall
 
 Unlike traditional REST architectures, this project leverages **gRPC** over **HTTP/2**, utilizing binary serialization (Protocol Buffers) to maximize throughput and minimize bandwidth usage. The system is architected to handle large binary files efficiently through **Streaming**, preventing memory overload on the server side.
 
-### 🏗️ Architecture & Tech Stack
+###  Architecture & Tech Stack
 
 * **Core:** .NET 9 (C#) for a high-performance Backend.
 * **Client:** Python (Cross-platform efficient scripting).
 * **Protocol:** gRPC (Google Remote Procedure Calls) & Protocol Buffers.
 * **Pattern:** Monorepo (Single Source of Truth for `.proto` contracts).
 
-### 🚀 Development Status (Roadmap)
+###  Development Status (Roadmap)
 
 The project follows an iterative incremental development lifecycle. Current progress is detailed below:
 
