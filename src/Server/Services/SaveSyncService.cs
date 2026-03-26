@@ -38,6 +38,7 @@ namespace GameSaveSync.Server.Services
                     
                     if (stream == null)
                     {
+                        Directory.CreateDirectory(_uploadDirectory);
                         string safeFileName = Path.GetFileName(currentChunk.Filename);
                         string finalPath = Path.Combine(_uploadDirectory, safeFileName);
                         

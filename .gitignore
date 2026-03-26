@@ -12,6 +12,12 @@ __pycache__/
 venv/
 .env
 
+# --- PyInstaller / Ejecutables ---
+dist/
+build/
+*.spec
+*.exe
+
 # --- OS ---
 .DS_Store
 Thumbs.db

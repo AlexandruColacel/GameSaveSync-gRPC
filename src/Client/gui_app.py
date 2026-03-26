@@ -8,10 +8,17 @@ import os
 import grpc
 import savesync_pb2_grpc
 import savesync_pb2
+from dotenv import load_dotenv
+
+# Esto busca el archivo .env y carga sus variables en el sistema
+load_dotenv()
+
+# Sacamos la URL de forma segura
+URL_SERVIDOR = os.getenv("AZURE_URL")
 
 # Reutilizamos la configuracion y helpers del cliente CLI
 CHUNK_SIZE = 32 * 1024
-CANAL = grpc.insecure_channel("localhost:5000")
+CANAL = grpc.secure_channel(URL_SERVIDOR, grpc.ssl_channel_credentials())
 stub = savesync_pb2_grpc.TrabajarGuardadoStub(CANAL)
 
 
@@ -130,11 +137,23 @@ class SaveSyncGUI(ctk.CTk):
             self.append_log("Introduce un nombre de archivo para bajar.")
             return
 
-        self.set_busy(True)
-        threading.Thread(target=self.download_save, args=(nombre,), daemon=True).start()
+        # Pedir al usuario que seleccione la carpeta de destino
+        carpeta_destino = fd.askdirectory(
+            title="Selecciona carpeta de destino",
+            initialdir=str(path.Path.home()),
+        )
+        if not carpeta_destino:
+            self.append_log("Descarga cancelada: no se seleccionó carpeta de destino.")
+            return
 
-    def download_save(self, nombre_archivo: str) -> None:
-        ruta_descargas = path.Path(r"C:\Users\Lex\TestServer\downloads")
+        self.set_busy(True)
+        threading.Thread(
+            target=self.download_save,
+            args=(nombre, path.Path(carpeta_destino)),
+            daemon=True,
+        ).start()
+
+    def download_save(self, nombre_archivo: str, ruta_descargas: path.Path) -> None:
         ruta_descargas.mkdir(parents=True, exist_ok=True)
         ruta_guardado = ruta_descargas / nombre_archivo
 
@@ -147,10 +166,10 @@ class SaveSyncGUI(ctk.CTk):
                     archivo_nuevo.write(trozo.save)
 
             if ruta_guardado.suffix == ".zip":
-                carpeta_destino = ruta_descargas / ruta_guardado.stem
-                shutil.unpack_archive(ruta_guardado, carpeta_destino)
+                carpeta_extraida = ruta_descargas / ruta_guardado.stem
+                shutil.unpack_archive(ruta_guardado, carpeta_extraida)
                 os.remove(ruta_guardado)
-                self.append_log(f"Descarga descomprimida en: {carpeta_destino}")
+                self.append_log(f"Descarga descomprimida en: {carpeta_extraida}")
             else:
                 self.append_log(f"Descarga guardada en: {ruta_guardado}")
         except grpc.RpcError as e:

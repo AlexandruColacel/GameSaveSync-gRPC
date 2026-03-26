@@ -5,14 +5,16 @@ import savesync_pb2_grpc
 import savesync_pb2
 import shutil
 import os
-
+from dotenv import load_dotenv
+load_dotenv()
 # Definimos el límite de seguridad (Límite - 64KB para metadatos de gRPC)
 # 4,194,304 - 65,536 = 4,128,768 bytes
 #aunque finalmente uso 32KB para una conexion mas rapida que si no me tiro 5 años subiendo archivos
 CHUNK_SIZE = 32 * 1024
 
+URL_SERVIDOR = os.getenv("AZURE_URL")
 #definir el canal
-canal = grpc.insecure_channel('localhost:5000') #para pruebas en local lo voy a dejar como insecure chanael.
+canal = grpc.secure_channel(URL_SERVIDOR, grpc.ssl_channel_credentials()) #para pruebas en local lo voy a dejar como insecure chanael.
 stub = savesync_pb2_grpc.TrabajarGuardadoStub(canal) # es my stub del lado del cliente
 
 
