@@ -5,7 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.ConfigureKestrel(options => 
 { 
     // Configurar el servidor para escuchar en HTTP/2 sin TLS en el puerto 5000 
-    options.ListenLocalhost(5000, o => o.Protocols = HttpProtocols.Http2); 
+    options.ListenAnyIP(5000, o => o.Protocols = HttpProtocols.Http2); 
 }); 
 
 builder.Services.AddGrpc();

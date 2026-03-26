@@ -8,43 +8,55 @@ namespace GameSaveSync.Server.Services
     // Heredamos de la clase Base generada automáticamente por el .proto
     public class SaveSyncService : TrabajarGuardado.TrabajarGuardadoBase
     {
+        private readonly IConfiguration _config;
+    
         private readonly ILogger<SaveSyncService> _logger;
-        
-        String UploadDirectory = "C:/Users/Lex/TestServer/Updates";
-        public SaveSyncService(ILogger<SaveSyncService> logger)
-        {
+        private readonly string _uploadDirectory;   
+       
+        public SaveSyncService(ILogger<SaveSyncService> logger, IConfiguration config)
+        {   
+            _config = config;
             _logger = logger;
+            _uploadDirectory = _config["Storage:UploadDirectory"] ?? "Updates";
         }
+         
 
         // Implementación del método SUBIR (Client Streaming)
         public override async Task<EstadoSubida> UploadSave(IAsyncStreamReader<saves> requestStream, ServerCallContext context)
         {
             FileStream stream = null ;
             // Aquí irá la lógica de leer el archivo, por ahora solo leemos el stream
-            while (await requestStream.MoveNext())
-            {   
+            try
+            {
+                    while (await requestStream.MoveNext(context.CancellationToken))
+                {   
 
-                var currentChunk = requestStream.Current;
-                int id = currentChunk.Id; //pillo el id  del objeto
-                string nombre_juego = currentChunk.Filename;
-                ByteString guardado = currentChunk.Save;
-                
-                if (stream == null)
-                {
-                    string safeFileName = Path.GetFileName(currentChunk.Filename);
-                    string finalPath = Path.Combine(UploadDirectory, safeFileName);
+                    var currentChunk = requestStream.Current;
+                    int id = currentChunk.Id; //pillo el id  del objeto
+                    string nombre_juego = currentChunk.Filename;
+                    ByteString guardado = currentChunk.Save;
                     
-                    // Creamos el archivo
-                    stream = new FileStream(finalPath, FileMode.Create);
-                }
-                guardado.WriteTo(stream);
-                _logger.LogInformation($"Recibido chunk de: {currentChunk.Filename}");
+                    if (stream == null)
+                    {
+                        string safeFileName = Path.GetFileName(currentChunk.Filename);
+                        string finalPath = Path.Combine(_uploadDirectory, safeFileName);
+                        
+                        // Creamos el archivo
+                        stream = new FileStream(finalPath, FileMode.Create);
+                    }
+                    guardado.WriteTo(stream);
+                    _logger.LogInformation($"Recibido chunk de: {currentChunk.Filename}");
 
+                }
             }
-            if(stream != null)
+            finally
+            {
+                if(stream != null)
             {
                 await stream.DisposeAsync();
             }
+            }
+            
             // Respondemos una sola vez al final
             return new EstadoSubida
             {
@@ -58,7 +70,7 @@ namespace GameSaveSync.Server.Services
         {
             //ver en que ruta esta el archivo
             string safeFileName = Path.GetFileName(request.Filename);
-            string rutaCompleta = Path.Combine(UploadDirectory, safeFileName);
+            string rutaCompleta = Path.Combine(_uploadDirectory, safeFileName);
 
             if (File.Exists(rutaCompleta))
             {
@@ -68,7 +80,7 @@ namespace GameSaveSync.Server.Services
                     byte[] chunk = new byte[32*1024] ; //buffee
                     int bytesleido;
                     bytesleido = await fileStream.ReadAsync(chunk);
-                    while(bytesleido > 0)
+                    while(bytesleido > 0 && !context.CancellationToken.IsCancellationRequested)
                     {
                         
                         await responseStream.WriteAsync(new EstadoBajada
